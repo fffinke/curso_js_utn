@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Ejemplo</title>
+        <script src="../node_modules/react/dist/react.js"></script>
+        <script src="../node_modules/react-dom/dist/react-dom.js"></script>
+        <script src="JSXTransformer.js"></script>
+    </head>
+        <body>
+            <div id="principal"></div>
+            <script type="text/jsx">
+                var ID_TIPO_PLATO = 0;
+                class TIPO_PLATO extends React.Component {
+                    constructor(props) {
+                        super(props);
+                        this.al_cambiar = this.al_cambiar.bind(this);
+                        this.al_agregar_tipo_plato = this.al_agregar_tipo_plato.bind(this);
+                        this.al_guardar_tipo_plato = this.al_guardar_tipo_plato.bind(this);
+                        this.state = {
+                            nombre_tipo_plato_nuevo: null,
+                            tipos_plato: [],
+                            style: {
+                                background: '#e3e3e3',
+                                display: 'none'
+                            }
+                        }
+                    }
+
+                    al_cambiar(evento) {
+                        console.log(evento.target.value);
+                        this.setState({nombre_tipo_plato_nuevo: evento.target.value});
+                    }
+
+                    al_guardar_tipo_plato(evento) {
+                        var tipo_plato_nuevo = {id: ++ID_TIPO_PLATO, nombre: this.state.nombre_tipo_plato_nuevo};
+                        var arreglo_auxiliar = this.state.tipos_plato.slice();
+                        arreglo_auxiliar.push(tipo_plato_nuevo);
+                        var style_auxiliar = this.state.style;
+                        style_auxiliar.display = 'none';
+                        this.setState({tipos_plato: arreglo_auxiliar, style: style_auxiliar});
+                        this.refs.tbx_nombre_tipo_plato.value = "";
+                        console.log(this.state);
+                    }
+
+                    al_agregar_tipo_plato(evento) {
+                        var style_auxiliar = this.state.style;
+                        style_auxiliar.display = 'block';
+                        this.setState({style: style_auxiliar});
+                    }
+
+                    render() {
+                        var opciones = this.state.tipos_plato.map((unTipo, index) => <option key={index} value={unTipo.id}>{unTipo.nombre}</option>);
+                        return (<div>
+                                    <label>Seleccione el tipo de plato: 
+                                        <select>
+                                            <option value="0">&lt;Seleccione una opción&gt;</option> 
+                                            {opciones}
+                                        </select>
+                                        <button onClick={this.al_agregar_tipo_plato}>Agregar Tipo de Plato...</button>
+                                    </label>
+                                    <div style={this.state.style}>
+                                        <p>Agregar Tipo de Plato</p>
+                                        <label>Tipo de Plato <input type="text" name="tipo" onChange={this.al_cambiar} placeholder="<Ingrese el Nombre>" ref='tbx_nombre_tipo_plato'/></label>
+                                        <button onClick={this.al_guardar_tipo_plato}>Agregar</button>
+                                    </div>
+                                </div>)
+                    }
+                }
+
+                class FORMULARIO_PLATO extends React.Component {
+                    constructor(props) {
+                        super(props);
+                        this.state = {
+                            nombre: "<Nombre del plato>",
+                            precio: 0.00
+                        };
+                        this.al_cambiar = this.al_cambiar.bind(this);
+                        this.al_enviar = this.al_enviar.bind(this);
+                    }
+
+                    al_cambiar(evento) {
+                        const elemento = evento.target;
+                        this.setState({
+                            [elemento.name]: elemento.value
+                        });
+                    }
+
+                    al_enviar(evento) {
+                        alert("Un nuevo plato fue recibido. Nombre: " + this.state.nombre + ", Precio: " + this.state.precio);
+                        evento.preventDefault();
+                    }
+
+                    render() {
+                        return (
+                            <div>
+                                <label htmlFor="nombre">Nombre </label><input type="text" id="nombre" name="nombre" onChange={this.al_cambiar} placeholder={this.state.nombre}/>
+                                <br/><br/>
+                                <label htmlFor="precio">Precio </label><input type="number" id="precio" name="precio" onChange={this.al_cambiar} placeholder={this.state.precio}/>
+                                <br/><br/>
+                                <TIPO_PLATO />
+                                <input type="submit" value="Crear Plato" onClick={this.al_enviar}/>
+                            </div>);
+                    }
+                }
+
+                class RESTO_APP extends React.Component {
+                    constructor(props) {
+                        super(props);
+                    }
+
+                    render() {
+                        return <div>
+                                    <h1>Bienvenido a ... {this.props.titulo}</h1>
+                                    <FORMULARIO_PLATO />
+                                </div>;
+                    }
+                }
+
+                ReactDOM.render(<RESTO_APP titulo="OFA Resto!"/>, document.getElementById("principal"));
+            </script>
+    </body>
+</html>
